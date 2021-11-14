@@ -1,43 +1,20 @@
 const inquirer = require("inquirer")
-const mysql = require("mysql2")
 const cTable = require('console.table');
-const db = require("./config/connection")
+const db = require("./config/connection");
+const {getDepartmentTable, getEmployeeTable, getRoleTable, addEmployee} = require("./lib/queries");
+const { roleOptions, employeeOptions, departmentOptions } = require("./lib/choices")
+
 
 const PORT = process.env.PORT || 3306;
 
-  db.connect((err) => {
+ db.connect((err) => {
   if (err) {
     console.log("Database Connection Failed !!!", err);
   } else {
-    console.log("connected to Database");
+    console.log("\nconnected to Database\n");
     startApp();
   }
 });
-
-function getDepartmentTable(){
-  db.promise().query("SELECT * FROM department;")
-  .then(([data]) => {
-      console.log(data);
-      startApp();
-  })
-  .catch(console.log(data));
-};
-
-
-function getRoleTable(){
-  db.query(`SELECT * FROM role;`, (err, results) => {
-    console.table(results)
-  }).catch(err)
-  console.log(err);
-};
-
-function getEmployeeTable(){
-  db.query(`SELECT * FROM employee;`, function (err, results) {
-    console.table(results);
-  }).catch(err)
-  console.log(err);
-   startApp();
-};
 
 const MainQuestions = 
   {
@@ -50,16 +27,65 @@ const MainQuestions =
     'Add new department',
     'Add new role',
     'Add new employee',
-    'Update employee role'
+    'Update employee role',
+    'Exit'
   ],
-    name: "home_Questions"
+    name: "main"
   };
   
 async function startApp(){
 await inquirer.prompt(MainQuestions)
-  .then((result) => {
-    if (result.choice ==="View all employees?") {
-          getEmployeeTable();
-    }
-  });
+  .then(async (result) =>  {
+    switch (result.main) {
+    case "View all employees":
+        getEmployeeTable();
+        startApp();
+        break;
+
+    case "View all departments":
+        await getDepartmentTable();
+        startApp();
+        break;
+
+    case "View all roles":
+        getRoleTable();
+        break;
+
+    case "Add new employee":
+        await addEmployee();
+        startApp();
+        break;
+
+    case "Add new department":
+        addDepartment();
+        startApp();
+        break;
+    case "Add new role":
+        addRole();
+        startApp();
+        break;
+    case "Update employee role":
+        updateEmpRole();
+        startApp();
+        break;
+ /*   case "Update employee manager":
+        updateEmpMngr();
+        break;
+    case "View all employees by manager":
+        viewAllEmpByMngr();
+        break;
+    case "Delete employee":
+        deleteEmp();
+        break;
+    case "View department budgets":
+        viewDeptBudget();
+        break;
+    case "Delete role":
+        deleteRole();
+        break;
+    case "Delete department":
+        deleteDept();
+        break; */
+}
+})
 }
