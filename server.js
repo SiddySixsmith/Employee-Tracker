@@ -1,9 +1,10 @@
 const inquirer = require("inquirer")
 const cTable = require('console.table');
 const db = require("./config/connection");
-const {getDepartmentTable, getEmployeeTable, getRoleTable, addEmployee} = require("./lib/queries");
-const { roleOptions, employeeOptions, departmentOptions } = require("./lib/choices")
-
+const questions = require("./lib/questions");
+const departmentQueries = require("./db/department")
+const roleQueries = require("./db/role")
+const employeeQueries = require("./db/employee");
 
 const PORT = process.env.PORT || 3306;
 
@@ -15,77 +16,115 @@ const PORT = process.env.PORT || 3306;
     startApp();
   }
 });
-
-const MainQuestions = 
-  {
-    type: "list",
-    message: "What would you like to do",
-    choices: [
-    'View all departments',
-    'View all roles',
-    'View all employees',
-    'Add new department',
-    'Add new role',
-    'Add new employee',
-    'Update employee role',
-    'Exit'
-  ],
-    name: "main"
-  };
   
 async function startApp(){
-await inquirer.prompt(MainQuestions)
+await inquirer.prompt(questions.MainQuestions)
   .then(async (result) =>  {
     switch (result.main) {
     case "View all employees":
-        getEmployeeTable();
+      await employeeQueries.readEmployeeTable();
         startApp();
         break;
 
     case "View all departments":
-        await getDepartmentTable();
+        await departmentQueries.readDeptTable();
         startApp();
         break;
 
     case "View all roles":
-        getRoleTable();
+      await roleQueries.readRoleTable();
+      startApp()
         break;
 
     case "Add new employee":
-        await addEmployee();
+        await createNewEmployee();
         startApp();
         break;
 
     case "Add new department":
-        addDepartment();
+      await createNewDepartment();
         startApp();
         break;
     case "Add new role":
-        addRole();
+      await  createNewRole();
         startApp();
         break;
     case "Update employee role":
-        updateEmpRole();
-        startApp();
+      await updateCurrentEmployee();
         break;
- /*   case "Update employee manager":
-        updateEmpMngr();
-        break;
-    case "View all employees by manager":
-        viewAllEmpByMngr();
-        break;
-    case "Delete employee":
-        deleteEmp();
-        break;
-    case "View department budgets":
-        viewDeptBudget();
-        break;
-    case "Delete role":
-        deleteRole();
-        break;
-    case "Delete department":
-        deleteDept();
-        break; */
+    case "Delete a department":
+      await deleteDepartment();
+      break;
+    case "Delete a role":
+      await deleteRole();
+      break;
+    case "Delete an employee":
+      await deleteEmployee();
+      break;
+    case "Exit":
+    console.log("thanks got using my app");
+    process.exit();
 }
 })
 }
+
+async function createNewDepartment() {
+await inquirer.prompt(questions.newdeptQuestions)
+.then(async(results) => {
+  await departmentQueries.createDept(results.departmentName);
+  console.log("\n","New Department Created","\n");
+      console.table(results)
+  });
+};
+
+async function createNewRole(){
+  await inquirer.prompt(questions.newRoleQuestions)
+  .then(async (results) => {
+    await roleQueries.createRole(results.roleName, results.roleSalary, results.departmentId);
+      console.log("\n","New Role Created","\n");
+  });
+};
+
+async function createNewEmployee(){
+  await inquirer.prompt(questions.newEmpQuesitons)
+  .then( async(results) => {
+    await employeeQueries.createEmployee(results.firstName, results.lastName, results.roleId, results.managerId);
+      console.log('\n',"New Employee added", '\n');
+  });
+};
+
+async function deleteDepartment() {
+  await inquirer.prompt(questions.deleteDepartment)
+  .then((results) => {
+      if (results.confirm) {
+          departmentQueries.deleteDepartment(results.departmentName);
+      } else {
+          console.log("Aborting");
+      }
+  });
+  startApp();
+};
+
+async function deleteRole() {
+  await inquirer.prompt(questions.deleteRole)
+  .then((results) => {
+      if (results.confirm) {
+          roleQueries.deleteRole(results.roleTitle);
+      } else {
+          console.log("Aborting");
+      }
+  });
+  startApp();
+};
+
+async function deleteEmployee(){
+  await inquirer.prompt(questions.deleteEmployee)
+  .then((results) => {
+      if (results.confirm) {
+          employee.deleteEmployee(results.employee_id);
+      } else {
+          console.log("Aborting");
+      }
+  });
+  startApp();
+};
