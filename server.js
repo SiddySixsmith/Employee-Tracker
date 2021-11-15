@@ -96,7 +96,7 @@ async function createNewEmployee(){
 async function deleteDepartment() {
   await inquirer.prompt(questions.deleteDepartment)
   .then((results) => {
-      if (results.department_name) {
+      if (results.confirm) {
           departmentQueries.deleteDepartment(results.department_name);
       } else {
           console.log("Aborting");
@@ -126,7 +126,7 @@ async function deleteEmployee(){
           console.log("Aborting");
       }
   });
-  
+  startApp();
 };
 
 async function updateCurrentEmployee(){
