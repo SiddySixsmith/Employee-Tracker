@@ -1,8 +1,8 @@
 const db = require('../config/connection');
 const cTable = require('console.table');
 
-const createRole = async function (roleName, roleSalary, departmentId){ 
-    db.query(`INSERT INTO role (title, salary, departmentId) VALUES (?, ?, ?)`, [roleName, roleSalary, departmentId]);
+const createRole = async function (role_title, role_salary, department_id){ 
+    db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [role_title, role_salary, department_id]);
 };
 
 async function readRoleTable(){
@@ -14,8 +14,8 @@ async function readRoleTable(){
     
   };
 
-async function deleteRole(roleTitle) {
-    db.query(`DELETE FROM role WHERE title = (?)`, [roleTitle]);
+async function deleteRole(role_title) {
+    db.query(`DELETE FROM role WHERE title = (?)`, [role_title]);
 }
  
 

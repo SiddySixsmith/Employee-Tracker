@@ -71,7 +71,7 @@ await inquirer.prompt(questions.MainQuestions)
 async function createNewDepartment() {
 await inquirer.prompt(questions.newdeptQuestions)
 .then(async(results) => {
-  await departmentQueries.createDept(results.departmentName);
+  await departmentQueries.createDept(results.department_name);
   console.log("\n","New Department Created","\n");
       console.table(results)
   });
@@ -80,7 +80,7 @@ await inquirer.prompt(questions.newdeptQuestions)
 async function createNewRole(){
   await inquirer.prompt(questions.newRoleQuestions)
   .then(async (results) => {
-    await roleQueries.createRole(results.roleName, results.roleSalary, results.departmentId);
+    await roleQueries.createRole(results.role_name, results.role_salary, results.department_id);
       console.log("\n","New Role Created","\n");
   });
 };
@@ -88,7 +88,7 @@ async function createNewRole(){
 async function createNewEmployee(){
   await inquirer.prompt(questions.newEmpQuesitons)
   .then( async(results) => {
-    await employeeQueries.createEmployee(results.firstName, results.lastName, results.roleId, results.managerId);
+    await employeeQueries.createEmployee(results.first_name, results.last_name, results.role_id, results.manager_id);
       console.log('\n',"New Employee added", '\n');
   });
 };
@@ -96,11 +96,11 @@ async function createNewEmployee(){
 async function deleteDepartment() {
   await inquirer.prompt(questions.deleteDepartment)
   .then((results) => {
-      if (results.confirm) {
-          departmentQueries.deleteDepartment(results.departmentName);
+      if (results.department_name) {
+          departmentQueries.deleteDepartment(results.department_name);
       } else {
           console.log("Aborting");
-      }
+      } 
   });
   startApp();
 };
@@ -109,7 +109,7 @@ async function deleteRole() {
   await inquirer.prompt(questions.deleteRole)
   .then((results) => {
       if (results.confirm) {
-          roleQueries.deleteRole(results.roleTitle);
+          roleQueries.deleteRole(results.role_title);
       } else {
           console.log("Aborting");
       }
@@ -121,10 +121,18 @@ async function deleteEmployee(){
   await inquirer.prompt(questions.deleteEmployee)
   .then((results) => {
       if (results.confirm) {
-          employee.deleteEmployee(results.employee_id);
+          employeeQueries.deleteEmployee(results.first_name);
       } else {
           console.log("Aborting");
       }
   });
-  startApp();
+  
 };
+
+async function updateCurrentEmployee(){
+  await inquirer.prompt(questions.updateEmployee)
+  .then((results) => {
+    employeeQueries.updateEmployee(results.employee_name, results.update_role_id)
+  });
+  startApp();
+}

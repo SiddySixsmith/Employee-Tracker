@@ -1,8 +1,8 @@
 const db = require('../config/connection');
 const cTable = require('console.table');
 
-const createDept = async function (departmentName){ 
-    db.query(`INSERT INTO department (name) VALUES (?)`, [departmentName]);
+const createDept = async function (department_name){ 
+    db.query(`INSERT INTO department (name) VALUES (?)`, [department_name]);
 };
 
 async function readDeptTable(){
@@ -14,12 +14,12 @@ async function readDeptTable(){
     
   };
 
-const updateDept = async function (updatedName, departmentName){
-    db.query(`UPDATE department SET name = (?) WHERE name = (?)`, [updatedName, departmentName]);
+  async function updateDept (updatedName, department_name){
+    db.query(`UPDATE department SET name = (?) WHERE name = (?)`, [updatedName, department_name]);
 }
 
-const deleteDepartment = async function(departmentName){
-    db.query(`DELETE FROM department WHERE name = (?)`, [departmentName]);
+async function deleteDepartment(department_name){
+    db.query(`DELETE FROM department WHERE name = (?)`, [department_name]);
 }
  
 
